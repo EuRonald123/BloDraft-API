@@ -1,6 +1,7 @@
 package com.blodraft.blog_api.model;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import com.blodraft.blog_api.model.enums.PostStatus;
 
@@ -42,13 +43,15 @@ public class Post {
     @Column(nullable = false)
     private PostStatus status;
 
-    @Column(nullable = false)
     private LocalDateTime publishedAt;
 
-    @Column(nullable = false)
-    private LocalDateTime updatedAd;
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
-    @ManyToMany
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 
