@@ -1,0 +1,114 @@
+package com.blodraft.blog_api.controller;
+
+import com.blodraft.blog_api.dto.request.PostRequest;
+import com.blodraft.blog_api.dto.response.CategoryResponse;
+import com.blodraft.blog_api.dto.response.PostResponse;
+import com.blodraft.blog_api.dto.response.TagResponse;
+import com.blodraft.blog_api.model.Category;
+import com.blodraft.blog_api.model.Post;
+import com.blodraft.blog_api.model.Tag;
+import com.blodraft.blog_api.service.CategoryService;
+import com.blodraft.blog_api.service.PostService;
+import com.blodraft.blog_api.service.TagService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/api/posts")
+@RequiredArgsConstructor
+public class PostController {
+    private final PostService postService;
+    private final CategoryService categoryService;
+    private final TagService tagService;
+
+    @GetMapping
+    public List<PostResponse> findAll(){
+        return postService.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @GetMapping("/{id}")
+    public PostResponse findById(@PathVariable Long id){
+        return toResponse(postService.findById(id));
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public PostResponse create(@RequestBody @Valid PostRequest request){
+        Post post = toEntity(request);
+        return toResponse(postService.save(post));
+    }
+
+    @PutMapping("/{id}")
+    public PostResponse update(@PathVariable Long id, @RequestBody @Valid PostRequest request){
+        Post post = toEntity(request);
+        post.setId(id);
+        return toResponse(postService.save(post));
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id){
+        postService.deleteById(id);
+    }
+
+    private PostResponse toResponse(Post post){
+        CategoryResponse catResponse = null;
+        if(post.getCategory() != null) {
+            catResponse = CategoryResponse.builder()
+                    .id(post.getCategory().getId())
+                    .name(post.getCategory().getName())
+                    .slug(post.getCategory().getSlug())
+                    .build();
+        }
+
+        Set<TagResponse> tagResponses = post.getTags()
+                .stream()
+                .map(tag -> TagResponse.builder()
+                        .id(tag.getId())
+                        .name(tag.getName())
+                        .slug(tag.getSlug())
+                        .build())
+                .collect(Collectors.toSet());
+
+        return PostResponse.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .slug(post.getSlug())
+                .content(post.getContent())
+                .excerpt(post.getExcerpt())
+                .authorName(post.getAuthorName())
+                .status(post.getStatus())
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .category(catResponse)
+                .tags(tagResponses)
+                .build();
+    }
+
+    private Post toEntity(PostRequest request){
+        Category category = categoryService.findById(request.getCategoryId());
+
+        Set<Tag> tags = request.getTagIds()
+                .stream()
+                .map(tagService::findById)
+                .collect(Collectors.toSet());
+
+        return Post.builder()
+                .title(request.getTitle())
+                .content(request.getContent())
+                .excerpt(request.getExcerpt())
+                .authorName(request.getAuthorName())
+                .category(category)
+                .tags(tags)
+                .build();
+    }
+}
