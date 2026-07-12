@@ -8,15 +8,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
 
-    public Page<Post> findAll(Pageable pageable) {
-        return postRepository.findAll(pageable);
+    public Page<Post> findAll(String search, Pageable pageable) {
+        if (search != null) {
+            return postRepository.search(search, pageable);
+        }
+            return postRepository.findAll(pageable);
     }
 
     public Post findById(Long id){
@@ -30,6 +31,11 @@ public class PostService {
 
     public void deleteById(Long id) {
         postRepository.deleteById(id);
+    }
+
+    public Post findBySlug(String slug){
+        return postRepository.findBySlug(slug)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found " + slug));
     }
 
 }

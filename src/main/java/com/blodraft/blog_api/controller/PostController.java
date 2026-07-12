@@ -20,6 +20,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,8 +34,9 @@ public class PostController {
     private final TagService tagService;
 
     @GetMapping
-    public PagedResponse<PostResponse> findAll(@PageableDefault (size = 10) Pageable pageable){
-        Page<Post> page = postService.findAll(pageable);
+    public PagedResponse<PostResponse> findAll(@PageableDefault (size = 10) Pageable pageable,
+                                               @RequestParam(required = false) String search){
+        Page<Post> page = postService.findAll(search, pageable);
         List<PostResponse> posts = page.getContent().stream()
                 .map(this::toResponse)
                 .toList();
@@ -51,6 +53,11 @@ public class PostController {
     @GetMapping("/{id}")
     public PostResponse findById(@PathVariable Long id){
         return toResponse(postService.findById(id));
+    }
+
+    @GetMapping("/slug/{slug}")
+    public PostResponse findBySlug(@PathVariable String slug){
+        return toResponse(postService.findBySlug(slug));
     }
 
     @PostMapping
@@ -121,7 +128,8 @@ public class PostController {
                 .content(request.getContent())
                 .excerpt(request.getExcerpt())
                 .authorName(request.getAuthorName())
-                .status(PostStatus.DRAFT)
+                .status(PostStatus.PUBLISHED)
+                .publishedAt(LocalDateTime.now())
                 .category(category)
                 .tags(tags)
                 .build();

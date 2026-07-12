@@ -13,6 +13,7 @@ Content-Type: application/json
 ### Listar categorias
 GET http://localhost:8080/api/categories
 
+
 ### Buscar categoria por ID
 GET http://localhost:8080/api/categories/1
 
@@ -75,6 +76,9 @@ Content-Type: application/json
 ### Listar posts
 GET http://localhost:8080/api/posts
 
+### Buscar Postagens
+GET http://localhost:8080/api/posts?search=Aprendendo
+
 ### Buscar post por ID
 GET http://localhost:8080/api/posts/1
 
@@ -90,6 +94,9 @@ Content-Type: application/json
   "categoryId": 1,
   "tagIds": [1, 2, 3]
 }
+
+### FindBySlug
+GET http://localhost:8080/api/posts/slug/aprendendo-spring-boot-do-zero
 
 ### Deletar post
 DELETE http://localhost:8080/api/posts/2
