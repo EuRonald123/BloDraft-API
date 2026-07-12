@@ -4,6 +4,8 @@ import com.blodraft.blog_api.exception.ResourceNotFoundException;
 import com.blodraft.blog_api.model.Post;
 import com.blodraft.blog_api.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,8 +15,8 @@ import java.util.List;
 public class PostService {
     private final PostRepository postRepository;
 
-    public List<Post> findAll() {
-        return postRepository.findAll();
+    public Page<Post> findAll(Pageable pageable) {
+        return postRepository.findAll(pageable);
     }
 
     public Post findById(Long id){

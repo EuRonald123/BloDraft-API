@@ -2,16 +2,21 @@ package com.blodraft.blog_api.controller;
 
 import com.blodraft.blog_api.dto.request.PostRequest;
 import com.blodraft.blog_api.dto.response.CategoryResponse;
+import com.blodraft.blog_api.dto.response.PagedResponse;
 import com.blodraft.blog_api.dto.response.PostResponse;
 import com.blodraft.blog_api.dto.response.TagResponse;
 import com.blodraft.blog_api.model.Category;
 import com.blodraft.blog_api.model.Post;
 import com.blodraft.blog_api.model.Tag;
+import com.blodraft.blog_api.model.enums.PostStatus;
 import com.blodraft.blog_api.service.CategoryService;
 import com.blodraft.blog_api.service.PostService;
 import com.blodraft.blog_api.service.TagService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,11 +33,19 @@ public class PostController {
     private final TagService tagService;
 
     @GetMapping
-    public List<PostResponse> findAll(){
-        return postService.findAll()
-                .stream()
+    public PagedResponse<PostResponse> findAll(@PageableDefault (size = 10) Pageable pageable){
+        Page<Post> page = postService.findAll(pageable);
+        List<PostResponse> posts = page.getContent().stream()
                 .map(this::toResponse)
                 .toList();
+        return PagedResponse.<PostResponse>builder()
+                .content(posts)
+                .page(page.getNumber())
+                .size(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .last(page.isLast())
+                .build();
     }
 
     @GetMapping("/{id}")
@@ -104,11 +117,20 @@ public class PostController {
 
         return Post.builder()
                 .title(request.getTitle())
+                .slug(generateSlug(request.getTitle()))
                 .content(request.getContent())
                 .excerpt(request.getExcerpt())
                 .authorName(request.getAuthorName())
+                .status(PostStatus.DRAFT)
                 .category(category)
                 .tags(tags)
                 .build();
+    }
+
+    private String generateSlug(String title) {
+        return title.toLowerCase()
+                .replaceAll("[^a-z0-9\\s]", "")
+                .replaceAll("\\s+", "-")
+                .replaceAll("^-+|-+$", "");
     }
 }
