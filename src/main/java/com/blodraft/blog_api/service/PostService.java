@@ -1,5 +1,6 @@
 package com.blodraft.blog_api.service;
 
+import com.blodraft.blog_api.exception.ResourceNotFoundException;
 import com.blodraft.blog_api.model.Post;
 import com.blodraft.blog_api.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class PostService {
 
     public Post findById(Long id){
         return postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found: " + id));
     }
 
     public Post save(Post post){

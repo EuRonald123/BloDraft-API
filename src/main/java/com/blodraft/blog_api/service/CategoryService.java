@@ -3,6 +3,7 @@ package com.blodraft.blog_api.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import com.blodraft.blog_api.exception.ResourceNotFoundException;
 import com.blodraft.blog_api.repository.CategoryRepository;
 import com.blodraft.blog_api.model.Category;
 
@@ -19,7 +20,7 @@ public class CategoryService {
 
     public Category findById(Long id){
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found: " + id));
     }
 
     public Category save(Category category){

@@ -2,6 +2,7 @@ package com.blodraft.blog_api.service;
 
 import java.util.List;
 
+import com.blodraft.blog_api.exception.ResourceNotFoundException;
 import com.blodraft.blog_api.model.Tag;
 import com.blodraft.blog_api.repository.TagRepository;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ public class TagService {
 
     public Tag findById(Long id){
         return tagRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tag not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Tag not found: " + id));
     }
 
     public Tag save(Tag tag){
