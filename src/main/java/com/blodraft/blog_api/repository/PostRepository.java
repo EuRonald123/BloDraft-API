@@ -11,10 +11,10 @@ import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     @Query( "SELECT distinct p FROM Post p " +
-            "LEFT join p.tags t " +
-            "WHERE cast(p.title as string ) like lower(concat('%', :search, '%')) " +
-            "OR cast(p.content as string) like LOWER(CONCAT('%', :search, '%')) " +
-            "OR cast(t.name as string) like LOWER(CONCAT('%', :search, '%')) ")
+            "LEFT JOIN p.tags t " +
+            "WHERE LOWER(p.title) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR LOWER(p.content) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR LOWER(t.name) LIKE LOWER(CONCAT('%', :search, '%')) ")
     Page<Post> search(@Param("search") String search, Pageable pageable);
 
 

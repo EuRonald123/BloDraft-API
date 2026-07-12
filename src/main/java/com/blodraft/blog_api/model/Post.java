@@ -30,9 +30,7 @@ public class Post {
     @Column(nullable = false, unique = true)
     private String slug;
 
-    @Lob
     @Column(nullable = false, columnDefinition = "TEXT")
-    //conteúdo
     private String content;
 
     //summary/resumo

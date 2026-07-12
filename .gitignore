@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 test-api.http
+.env/
 
 ### STS ###
 .apt_generated
