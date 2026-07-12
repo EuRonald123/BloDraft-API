@@ -28,7 +28,8 @@ public class TagService {
     }
 
     public void deleteById(Long id) {
-        tagRepository.deleteById(id);
+        Tag tag = findById(id);
+        tagRepository.delete(tag);
     }
 
 }

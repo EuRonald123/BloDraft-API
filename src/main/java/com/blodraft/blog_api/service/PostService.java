@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -30,12 +32,35 @@ public class PostService {
     }
 
     public void deleteById(Long id) {
-        postRepository.deleteById(id);
+        Post post = findById(id);
+        postRepository.delete(post);
     }
 
     public Post findBySlug(String slug){
         return postRepository.findBySlug(slug)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found " + slug));
+    }
+
+    public String generateUniqueSlug(String baseSlug) {
+        String slug = baseSlug;
+        int counter = 1;
+        while (postRepository.findBySlug(slug).isPresent()) {
+            slug = baseSlug + "-" + counter;
+            counter++;
+        }
+        return slug;
+    }
+
+    public String generateUniqueSlug(String baseSlug, Long excludeId) {
+        String slug = baseSlug;
+        int counter = 1;
+        Optional<Post> existing = postRepository.findBySlug(slug);
+        while (existing.isPresent() && !existing.get().getId().equals(excludeId)) {
+            slug = baseSlug + "-" + counter;
+            counter++;
+            existing = postRepository.findBySlug(slug);
+        }
+        return slug;
     }
 
 }

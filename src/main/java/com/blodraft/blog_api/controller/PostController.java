@@ -69,9 +69,22 @@ public class PostController {
 
     @PutMapping("/{id}")
     public PostResponse update(@PathVariable Long id, @RequestBody @Valid PostRequest request){
-        Post post = toEntity(request);
-        post.setId(id);
-        return toResponse(postService.save(post));
+        Post existing = postService.findById(id);
+
+        Category category = categoryService.findById(request.getCategoryId());
+        Set<Tag> tags = request.getTagIds().stream()
+                .map(tagService::findById)
+                .collect(Collectors.toSet());
+
+        existing.setTitle(request.getTitle());
+        existing.setSlug(postService.generateUniqueSlug(generateSlug(request.getTitle()), id));
+        existing.setContent(request.getContent());
+        existing.setExcerpt(request.getExcerpt());
+        existing.setAuthorName(request.getAuthorName());
+        existing.setCategory(category);
+        existing.setTags(tags);
+
+        return toResponse(postService.save(existing));
     }
 
     @DeleteMapping("/{id}")
@@ -124,7 +137,7 @@ public class PostController {
 
         return Post.builder()
                 .title(request.getTitle())
-                .slug(generateSlug(request.getTitle()))
+                .slug(postService.generateUniqueSlug(generateSlug(request.getTitle())))
                 .content(request.getContent())
                 .excerpt(request.getExcerpt())
                 .authorName(request.getAuthorName())
