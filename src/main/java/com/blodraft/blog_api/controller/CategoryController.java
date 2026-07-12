@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.blodraft.blog_api.controller.PostController.*;
+
 @RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
@@ -59,9 +61,13 @@ public class CategoryController {
     }
 
     private Category toEntity(CategoryRequest request){
+        String slug = request.getSlug();
+        if (slug == null || slug.isBlank()) {
+            slug = generateSlug(request.getName());
+        }
         return Category.builder()
                 .name(request.getName())
-                .slug(request.getSlug())
+                .slug(slug)
                 .build();
 
     }

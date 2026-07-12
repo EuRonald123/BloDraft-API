@@ -135,7 +135,7 @@ public class PostController {
                 .build();
     }
 
-    private String generateSlug(String title) {
+    public static String generateSlug(String title) {
         return title.toLowerCase()
                 .replaceAll("[^a-z0-9\\s]", "")
                 .replaceAll("\\s+", "-")

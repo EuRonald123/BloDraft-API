@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.blodraft.blog_api.controller.PostController.*;
+
 @RestController
 @RequestMapping("/api/tags")
 @RequiredArgsConstructor
@@ -59,9 +61,13 @@ public class TagController {
     }
 
     private Tag toEntity(TagRequest request){
+        String slug = request.getSlug();
+        if (slug == null || slug.isBlank()) {
+            slug = generateSlug(request.getName());
+        }
         return Tag.builder()
                 .name(request.getName())
-                .slug(request.getSlug())
+                .slug(slug)
                 .build();
     }
 }
