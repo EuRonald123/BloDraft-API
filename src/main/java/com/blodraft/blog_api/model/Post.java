@@ -20,7 +20,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "posts")
 public class Post {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,8 +32,10 @@ public class Post {
 
     @Lob
     @Column(nullable = false, columnDefinition = "TEXT")
+    //conteúdo
     private String content;
 
+    //summary/resumo
     private String excerpt;
     
     private String authorName;
