@@ -4,6 +4,7 @@ import com.blodraft.blog_api.dto.request.TagRequest;
 import com.blodraft.blog_api.dto.response.TagResponse;
 import com.blodraft.blog_api.model.Tag;
 import com.blodraft.blog_api.service.TagService;
+import com.blodraft.blog_api.utils.SlugUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -61,9 +62,13 @@ public class TagController {
     }
 
     private Tag toEntity(TagRequest request){
+        String slug = request.getSlug();
+        if (slug == null || slug.isBlank()) {
+            slug = SlugUtils.generate(request.getName());
+        }
         return Tag.builder()
                 .name(request.getName())
-                .slug(request.getSlug())
+                .slug(slug)
                 .build();
     }
 }

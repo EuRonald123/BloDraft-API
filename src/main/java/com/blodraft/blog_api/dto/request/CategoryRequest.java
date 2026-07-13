@@ -15,7 +15,6 @@ public class CategoryRequest {
     @Size(max = 30)
     private String name;
 
-    @NotBlank
-    @Pattern(regexp = "^[a-z0-9-]+$")
+    @Pattern(regexp = "^[a-z0-9-]*$")
     private String slug;
 }

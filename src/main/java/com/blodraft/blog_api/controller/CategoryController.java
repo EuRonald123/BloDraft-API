@@ -4,6 +4,7 @@ import com.blodraft.blog_api.dto.request.CategoryRequest;
 import com.blodraft.blog_api.dto.response.CategoryResponse;
 import com.blodraft.blog_api.model.Category;
 import com.blodraft.blog_api.service.CategoryService;
+import com.blodraft.blog_api.utils.SlugUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -61,9 +62,13 @@ public class CategoryController {
     }
 
     private Category toEntity(CategoryRequest request){
+        String slug = request.getSlug();
+        if (slug == null || slug.isBlank()) {
+            slug = SlugUtils.generate(request.getName());
+        }
         return Category.builder()
                 .name(request.getName())
-                .slug(request.getSlug())
+                .slug(slug)
                 .build();
     }
 
