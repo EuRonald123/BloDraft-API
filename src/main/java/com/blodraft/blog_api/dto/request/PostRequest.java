@@ -2,7 +2,6 @@ package com.blodraft.blog_api.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -16,7 +15,6 @@ import java.util.Set;
 public class PostRequest {
     @NotBlank
     @Size(max = 100)
-    @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ\\s]+$", message = "Title must contain only letters and spaces")
     private String title;
 
     @NotBlank
