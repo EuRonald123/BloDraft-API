@@ -12,6 +12,7 @@ import com.blodraft.blog_api.model.enums.PostStatus;
 import com.blodraft.blog_api.service.CategoryService;
 import com.blodraft.blog_api.service.PostService;
 import com.blodraft.blog_api.service.TagService;
+import com.blodraft.blog_api.utils.SlugUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -77,7 +78,6 @@ public class PostController {
                 .collect(Collectors.toSet());
 
         existing.setTitle(request.getTitle());
-        existing.setSlug(postService.generateUniqueSlug(generateSlug(request.getTitle()), id));
         existing.setContent(request.getContent());
         existing.setExcerpt(request.getExcerpt());
         existing.setAuthorName(request.getAuthorName());
@@ -137,7 +137,7 @@ public class PostController {
 
         return Post.builder()
                 .title(request.getTitle())
-                .slug(postService.generateUniqueSlug(generateSlug(request.getTitle())))
+                .slug(postService.generateUniqueSlug(SlugUtils.generate(request.getTitle())))
                 .content(request.getContent())
                 .excerpt(request.getExcerpt())
                 .authorName(request.getAuthorName())
@@ -148,10 +148,4 @@ public class PostController {
                 .build();
     }
 
-    public static String generateSlug(String title) {
-        return title.toLowerCase()
-                .replaceAll("[^a-z0-9\\s]", "")
-                .replaceAll("\\s+", "-")
-                .replaceAll("^-+|-+$", "");
-    }
 }
